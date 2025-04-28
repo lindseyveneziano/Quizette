@@ -13,7 +13,7 @@ const LevelSelectModal = ({ isOpen, onClose, onSelect }) => {
       >
         <button
           onClick={onClose}
-          className="absolute top-3 right-4 text-gray-600 text-xl font-bold hover:text-black"
+          className="absolute top-3 right-4 text-gray-600 text-xl font-bold font-sans hover:text-black"
         >
           ×
         </button>

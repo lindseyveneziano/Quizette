@@ -14,7 +14,7 @@ const Dashboard = () => {
   const navigate = useNavigate();
 
   const handleLevelSelect = (level) => {
-    setSelectedCategory(null); 
+    setSelectedCategory(null);
     setSelectedLevel(level);
     setIsModalOpen(false);
     navigate("/quiz");
@@ -35,7 +35,13 @@ const Dashboard = () => {
           `}
         </style>
 
-        <HeroBanner onPlayClick={() => setIsModalOpen(true)} />
+        <HeroBanner
+          name="Alli Loskot"
+          id="ID-1509"
+          points={180}
+          onPlayClick={() => setIsModalOpen(true)}
+        />
+
         <SearchBar />
         <div className="category-scroll px-1">
           <CategoriesSection />

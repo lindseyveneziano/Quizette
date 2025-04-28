@@ -1,11 +1,9 @@
-
 import React from "react";
 import dataIcon from "../assets/data.jpg";
 import algoIcon from "../assets/algorithms.png";
 import cyberIcon from "../assets/cybersecurity.png";
 import dbIcon from "../assets/database.png";
 import aiIcon from "../assets/ai.png";
-
 
 const activities = [
   {
@@ -45,26 +43,22 @@ const activities = [
   },
 ];
 
-
 const RecentActivities = () => {
   return (
-    <div className="mt-6">
-      <h2 className="text-xl font-normal text-black font-['Times_New_Roman'] mb-3">
+    <div className="mt-6 pb-8">
+      <h2 className="text-xl font-normal text-black mb-3">
         Recent Activity
       </h2>
-
 
       <div className="flex flex-col gap-3">
         {activities.map((activity, i) => {
           const percentage = (activity.score / activity.questions) * 100;
-
 
           return (
             <div
               key={i}
               className="bg-[#C7D7E3] rounded-xl flex items-center justify-between px-4 py-3"
             >
-             
               <div className="flex items-center gap-4">
                 <img
                   src={activity.icon}
@@ -72,26 +66,24 @@ const RecentActivities = () => {
                   className="w-8 h-8 object-contain"
                 />
                 <div>
-                  <p className="text-sm font-semibold font-['Times_New_Roman']">
+                  <p className="text-sm font-semibold">
                     {activity.title}
                   </p>
-                  <p className="text-[11px] text-gray-700 font-['Times_New_Roman']">
+                  <p className="text-[13px] text-gray-700">
                     {activity.questions} Questions
                   </p>
                 </div>
               </div>
 
-
-              
               <div
-                className="relative w-10 h-10 rounded-full flex items-center justify-center font-semibold font-['Times_New_Roman'] text-[12px]"
+                className="relative w-10 h-10 rounded-full flex items-center justify-center font-semibold text-[12px]"
                 style={{
-                  backgroundColor: `${activity.color}33`, 
+                  backgroundColor: `${activity.color}33`,
                 }}
               >
                 {activity.score}/10
                 <div
-                  className="absolute top-0 left-0 w-full h-full rounded-full border-[3px]"
+                  className="absolute top-0 left-0 w-full h-full rounded-full border-[3px] bg-clip-padding"
                   style={{
                     borderColor: activity.color,
                     borderTopColor: "transparent",
@@ -107,6 +99,5 @@ const RecentActivities = () => {
     </div>
   );
 };
-
 
 export default RecentActivities;

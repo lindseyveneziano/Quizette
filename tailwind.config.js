@@ -1,12 +1,17 @@
 /** @type {import('tailwindcss').Config} */
-export default {
+module.exports = {
   content: [
     "./index.html",
     "./src/**/*.{js,jsx,ts,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      // Removed custom "times" font
+      fontFamily: {
+        profile: ['Georgia', 'serif'], // exact look from Profile
+        sans: ['ui-sans-serif', 'system-ui', 'sans-serif'], // default Tailwind
+      }      
+    },
   },
   plugins: [],
- 
-}
+};
