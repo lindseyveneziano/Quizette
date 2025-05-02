@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { loginUser, registerUser } from "../context/useAuth.js";
 
 const LoginRegister = () => {
   const [activeTab, setActiveTab] = useState("login");
@@ -8,6 +9,7 @@ const LoginRegister = () => {
   const [registerData, setRegisterData] = useState({
     firstName: "",
     lastName: "",
+    username: "",
     email: "",
     password: "",
     confirmPassword: "",
@@ -17,22 +19,29 @@ const LoginRegister = () => {
 
   const validateEmail = (email) => /\S+@\S+\.\S+/.test(email);
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     const newErrors = {};
     if (!validateEmail(loginEmail)) newErrors.loginEmail = "Invalid email address";
     if (!loginPassword) newErrors.loginPassword = "Incorrect password";
 
     if (Object.keys(newErrors).length === 0) {
-      navigate("/home");
+      try {
+        await loginUser(loginEmail, loginPassword);
+        navigate("/home");
+      } catch (err) {
+        setErrors({ loginPassword: err.message });
+      }
     } else {
       setErrors(newErrors);
     }
   };
 
-  const handleRegister = () => {
+  const handleRegister = async () => {
     const newErrors = {};
     if (!registerData.firstName || !registerData.lastName)
       newErrors.registerName = "Name required";
+    if (!registerData.username || registerData.username.length < 3)
+      newErrors.registerUsername = "Username must be at least 3 characters";
     if (!validateEmail(registerData.email))
       newErrors.registerEmail = "Invalid email address";
     if (!registerData.password || registerData.password.length < 6)
@@ -41,7 +50,16 @@ const LoginRegister = () => {
       newErrors.registerConfirm = "Passwords do not match";
 
     if (Object.keys(newErrors).length === 0) {
-      navigate("/home");
+      try {
+        await registerUser(registerData.email, registerData.password, {
+          firstName: registerData.firstName,
+          lastName: registerData.lastName,
+          username: registerData.username,
+        });
+        navigate("/home");
+      } catch (err) {
+        setErrors({ registerUsername: err.message }); // show backend error (like "Username taken")
+      }
     } else {
       setErrors(newErrors);
     }
@@ -127,6 +145,14 @@ const LoginRegister = () => {
                 value={registerData.lastName}
                 onChange={(e) => setRegisterData({ ...registerData, lastName: e.target.value })}
               />
+              <input
+                type="text"
+                placeholder="Username"
+                className="input-style"
+                value={registerData.username}
+                onChange={(e) => setRegisterData({ ...registerData, username: e.target.value })}
+              />
+              {errors.registerUsername && <p className="text-red-500 text-xs -mt-2">{errors.registerUsername}</p>}
               <input
                 type="email"
                 placeholder="Email Address"

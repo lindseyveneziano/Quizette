@@ -1,17 +1,37 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { onAuthStateChanged } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
+import { auth, db } from "../context/firebase";
+
 import useQuizState from "../context/useQuizState";
 import HeroBanner from "./HeroBanner";
 import SearchBar from "./SearchBar";
 import CategoriesSection from "./CategoriesSection";
 import RecentActivities from "./RecentActivities";
-import Footer from "../components/Footer";
+import Footer from "./Footer";
 import LevelSelectModal from "./LevelSelectModal";
 
 const Dashboard = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [userData, setUserData] = useState(null);
   const { setSelectedLevel, setSelectedCategory } = useQuizState();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      if (currentUser) {
+        const userDoc = doc(db, "users", currentUser.uid);
+        const docSnap = await getDoc(userDoc);
+
+        if (docSnap.exists()) {
+          setUserData(docSnap.data());
+        }
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   const handleLevelSelect = (level) => {
     setSelectedCategory(null);
@@ -36,8 +56,8 @@ const Dashboard = () => {
         </style>
 
         <HeroBanner
-          name="Alli Loskot"
-          id="ID-1509"
+          name={userData?.name || "Loading"}
+          id={userData?.username || "ID-000000"}
           points={180}
           onPlayClick={() => setIsModalOpen(true)}
         />
