@@ -7,20 +7,23 @@ import aiIcon from "../assets/ai.png";
 import { useNavigate } from "react-router-dom";
 import useQuizState from "../context/useQuizState";
 
+// Display label = what users see
+// apiValue = what QuizAPI expects
 const categories = [
-  { label: "Data Structures", icon: dataIcon },
-  { label: "Algorithms", icon: algoIcon },
-  { label: "Cybersecurity", icon: cyberIcon },
-  { label: "Database", icon: dbIcon },
-  { label: "Artificial Intelligence", icon: aiIcon },
+  { label: "SQL & Databases", apiValue: "SQL & Databases", icon: dbIcon },
+  { label: "General Programming", apiValue: "General Programming", icon: algoIcon },
+  { label: "DevOps & Security", apiValue: "DevOps & Security", icon: cyberIcon },
+  { label: "Linux Essentials", apiValue: "Linux Essentials", icon: dataIcon },
+  { label: "JavaScript Frameworks", apiValue: "JavaScript Frameworks", icon: aiIcon },
 ];
+
 
 const CategoriesSection = () => {
   const navigate = useNavigate();
   const { setSelectedCategory } = useQuizState();
 
   const handleClick = (category) => {
-    setSelectedCategory(category);
+    setSelectedCategory(category.apiValue); // passing the apiValue (e.g., "SQL", "Code", etc.)
     navigate("/levels");
   };
 
@@ -34,7 +37,7 @@ const CategoriesSection = () => {
           <button
             key={i}
             className="flex flex-col items-center flex-shrink-0 w-[80px] text-center focus:outline-none"
-            onClick={() => handleClick(cat.label)}
+            onClick={() => handleClick(cat)}
           >
             <img
               src={cat.icon}

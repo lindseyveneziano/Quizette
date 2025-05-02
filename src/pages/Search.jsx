@@ -2,18 +2,20 @@ import React, { useState } from "react";
 import MainLayout from "../Components/MainLayout";
 import { useNavigate } from "react-router-dom";
 import useQuizState from "../context/useQuizState";
-import dataIcon from "../assets/data.jpg";
+
+// Icons
+import dbIcon from "../assets/database.png";
 import algoIcon from "../assets/algorithms.png";
 import cyberIcon from "../assets/cybersecurity.png";
-import dbIcon from "../assets/database.png";
+import dataIcon from "../assets/data.jpg";
 import aiIcon from "../assets/ai.png";
 
 const categories = [
-  { label: "Data Structures", icon: dataIcon },
-  { label: "Algorithms", icon: algoIcon },
-  { label: "Cybersecurity", icon: cyberIcon },
-  { label: "Database", icon: dbIcon },
-  { label: "Artificial Intelligence", icon: aiIcon },
+  { label: "SQL & Databases", apiValue: "SQL", icon: dbIcon },
+  { label: "General Programming", apiValue: "Code", icon: algoIcon },
+  { label: "DevOps & Security", apiValue: "DevOps", icon: cyberIcon },
+  { label: "Linux Essentials", apiValue: "Linux", icon: dataIcon },
+  { label: "JavaScript Frameworks", apiValue: "JavaScript", icon: aiIcon },
 ];
 
 const Search = () => {
@@ -22,19 +24,18 @@ const Search = () => {
   const navigate = useNavigate();
   const { setSelectedCategory } = useQuizState();
 
-  const handleCategoryClick = (category) => {
-    setSelectedCategory(category);
+  const handleCategoryClick = (categoryObj) => {
+    setSelectedCategory(categoryObj.apiValue);
     navigate("/levels");
 
-    // Update recent searches
     setRecentSearches((prev) => {
-      const updated = [category, ...prev.filter((item) => item !== category)];
-      return updated.slice(0, 5); // Limit to 5
+      const updated = [categoryObj, ...prev.filter((item) => item.label !== categoryObj.label)];
+      return updated.slice(0, 5);
     });
   };
 
-  const handleRemoveRecent = (category) => {
-    setRecentSearches((prev) => prev.filter((item) => item !== category));
+  const handleRemoveRecent = (categoryObj) => {
+    setRecentSearches((prev) => prev.filter((item) => item.label !== categoryObj.label));
   };
 
   const filteredCategories = categories.filter((cat) =>
@@ -58,19 +59,19 @@ const Search = () => {
           <div className="mb-6">
             <h2 className="text-lg font-semibold mb-3 text-black">Recent Searches</h2>
             <div className="flex flex-col gap-2">
-              {recentSearches.map((item, index) => (
+              {recentSearches.map((cat, index) => (
                 <div
                   key={index}
                   className="flex items-center justify-between bg-blue-50 hover:bg-blue-100 py-2 px-4 rounded-lg transition"
                 >
                   <button
-                    onClick={() => handleCategoryClick(item)}
+                    onClick={() => handleCategoryClick(cat)}
                     className="text-blue-600 text-left flex-1"
                   >
-                    {item}
+                    {cat.label}
                   </button>
                   <button
-                    onClick={() => handleRemoveRecent(item)}
+                    onClick={() => handleRemoveRecent(cat)}
                     className="text-gray-400 hover:text-red-500 text-lg ml-3"
                   >
                     ×
@@ -81,13 +82,13 @@ const Search = () => {
           </div>
         )}
 
-        {/* Categories */}
+        {/* Category List */}
         <div className="flex flex-col gap-4">
           {filteredCategories.length > 0 ? (
             filteredCategories.map((cat, index) => (
               <button
                 key={index}
-                onClick={() => handleCategoryClick(cat.label)}
+                onClick={() => handleCategoryClick(cat)}
                 className="flex items-center gap-4 p-3 bg-[#f9fafb] rounded-xl shadow hover:bg-blue-100 transition"
               >
                 <img src={cat.icon} alt={cat.label} className="w-10 h-10 object-contain" />

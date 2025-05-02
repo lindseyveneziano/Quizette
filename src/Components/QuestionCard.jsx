@@ -1,7 +1,7 @@
 import React from "react";
 import useQuizState from "../context/useQuizState";
 
-// Import category icons
+// Updated icon map for new labels
 import dataIcon from "../assets/data.jpg";
 import algoIcon from "../assets/algorithms.png";
 import cyberIcon from "../assets/cybersecurity.png";
@@ -9,11 +9,11 @@ import dbIcon from "../assets/database.png";
 import aiIcon from "../assets/ai.png";
 
 const categoryIcons = {
-  "Data Structures": dataIcon,
-  "Algorithms": algoIcon,
-  "Cybersecurity": cyberIcon,
-  "Database": dbIcon,
-  "Artificial Intelligence": aiIcon,
+  "SQL & Databases": dbIcon,
+  "General Programming": algoIcon,
+  "DevOps & Security": cyberIcon,
+  "Linux Essentials": dataIcon,
+  "JavaScript Frameworks": aiIcon,
 };
 
 const QuestionCard = ({
@@ -22,15 +22,15 @@ const QuestionCard = ({
   totalQuestions,
   onAnswer,
 }) => {
-  const { question, options, answer } = questionData;
   const { selectedCategory, selectedLevel } = useQuizState();
-
-  const handleClick = (option) => {
-    const isCorrect = option === answer;
-    onAnswer(isCorrect);
-  };
-
   const icon = categoryIcons[selectedCategory];
+
+  const handleClick = (selectedText) => {
+    const selected = questionData.options.find(opt => opt.text === selectedText);
+    if (selected) {
+      onAnswer(selected.isCorrect);
+    }
+  };
 
   return (
     <div className="w-full h-full gap-5 px-5 py-3 flex flex-col items-center justify-start font-times">
@@ -54,19 +54,19 @@ const QuestionCard = ({
 
       {/* Question box */}
       <div className="bg-[#C7D7E3] text-black text-center text-base font-semibold rounded-xl px-4 py-4 mt-4 shadow w-full">
-        {question}
+        {questionData.question}
       </div>
 
       {/* Answer options */}
       <div className="flex flex-col gap-4 mt-20 w-full">
-        {options.map((opt, i) => (
+        {questionData.options.map((opt, i) => (
           <button
             key={i}
-            onClick={() => handleClick(opt)}
+            onClick={() => handleClick(opt.text)}
             className="group w-full flex items-center justify-start bg-[#E6EEF5] hover:bg-[#d5e5f5] text-black font-medium py-3 px-4 rounded-xl border border-gray-300 shadow-sm transition"
           >
             <div className="w-4 h-4 border-2 border-black rounded-full mr-3 group-hover:bg-black transition-all duration-200" />
-            {opt}
+            {opt.text}
           </button>
         ))}
       </div>
