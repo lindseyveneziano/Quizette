@@ -11,12 +11,13 @@ import dataIcon from "../assets/data.jpg";
 import aiIcon from "../assets/ai.png";
 
 const categories = [
-  { label: "SQL & Databases", apiValue: "SQL", icon: dbIcon },
+  { label: "Containers & Deployment", apiValue: "Docker", icon: dbIcon }, 
   { label: "General Programming", apiValue: "Code", icon: algoIcon },
   { label: "DevOps & Security", apiValue: "DevOps", icon: cyberIcon },
   { label: "Linux Essentials", apiValue: "Linux", icon: dataIcon },
   { label: "JavaScript Frameworks", apiValue: "JavaScript", icon: aiIcon },
 ];
+
 
 const Search = () => {
   const [searchTerm, setSearchTerm] = useState("");

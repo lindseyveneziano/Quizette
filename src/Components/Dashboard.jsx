@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, onSnapshot } from "firebase/firestore";
 import { auth, db } from "../context/firebase";
 
 import useQuizState from "../context/useQuizState";
@@ -19,30 +19,35 @@ const Dashboard = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      if (currentUser) {
-        const userDoc = doc(db, "users", currentUser.uid);
-        const docSnap = await getDoc(userDoc);
+    let unsubscribeUser = () => {};
 
-        if (docSnap.exists()) {
-          setUserData(docSnap.data());
-        }
+    const unsubscribeAuth = onAuthStateChanged(auth, (currentUser) => {
+      if (currentUser) {
+        const userDocRef = doc(db, "users", currentUser.uid);
+        unsubscribeUser = onSnapshot(userDocRef, (docSnap) => {
+          if (docSnap.exists()) {
+            setUserData(docSnap.data());
+          }
+        });
       }
     });
 
-    return () => unsubscribe();
+    return () => {
+      unsubscribeAuth();
+      unsubscribeUser();
+    };
   }, []);
 
   const handleLevelSelect = (level) => {
-    setSelectedCategory(null);
+    setSelectedCategory("Containers & Deployment");
     setSelectedLevel(level);
     setIsModalOpen(false);
     navigate("/quiz");
   };
 
   return (
-    <div className="min-h-screen flex justify-center items-center bg-[#E6EEF5]">
-      <div className="w-[390px] h-[812px] overflow-y-scroll bg-white rounded-2xl shadow p-3 flex flex-col gap-3 relative pb-4">
+    <div className="fixed inset-0 flex justify-center items-center bg-[#E6EEF5]">
+      <div className="w-[390px] h-[812px] bg-white rounded-2xl shadow flex flex-col overflow-hidden">
         <style>
           {`
             ::-webkit-scrollbar {
@@ -55,21 +60,27 @@ const Dashboard = () => {
           `}
         </style>
 
-        <HeroBanner
-          name={userData?.name || "Loading"}
-          id={userData?.username || "ID-000000"}
-          points={180}
-          onPlayClick={() => setIsModalOpen(true)}
-        />
+        {/* Scrollable content */}
+        <div className="flex-1 overflow-y-auto p-3 flex flex-col gap-3">
+          <HeroBanner
+            name={userData?.name || "Loading"}
+            id={userData?.username || "ID-000000"}
+            points={userData?.points || 0}
+            profileImage={userData?.profileImage}
+            onPlayClick={() => setIsModalOpen(true)}
+          />
+          <SearchBar />
+          <div className="category-scroll px-1">
+            <CategoriesSection />
+          </div>
+          {userData && (
+            <div className="mt-[-10px]">
+              <RecentActivities />
+            </div>
+          )}
+          <div className="pb-10" />
+        </div>
 
-        <SearchBar />
-        <div className="category-scroll px-1">
-          <CategoriesSection />
-        </div>
-        <div className="mt-[-10px]">
-          <RecentActivities />
-        </div>
-        <div className="pb-10" />
         <Footer />
       </div>
 

@@ -10,12 +10,13 @@ import useQuizState from "../context/useQuizState";
 // Display label = what users see
 // apiValue = what QuizAPI expects
 const categories = [
-  { label: "SQL & Databases", apiValue: "SQL & Databases", icon: dbIcon },
+  { label: "Containers & Deployment", apiValue: "Containers & Deployment", icon: dbIcon }, // previously SQL
   { label: "General Programming", apiValue: "General Programming", icon: algoIcon },
   { label: "DevOps & Security", apiValue: "DevOps & Security", icon: cyberIcon },
   { label: "Linux Essentials", apiValue: "Linux Essentials", icon: dataIcon },
   { label: "JavaScript Frameworks", apiValue: "JavaScript Frameworks", icon: aiIcon },
 ];
+
 
 
 const CategoriesSection = () => {
@@ -32,11 +33,11 @@ const CategoriesSection = () => {
       <h2 className="text-xl font-normal text-black font-['Times_New_Roman'] mb-3">
         Categories
       </h2>
-      <div className="flex gap-6 overflow-x-auto category-scroll">
-        {categories.map((cat, i) => (
+      <div className="flex gap-6 overflow-x-auto px-4 scroll-smooth">
+      {categories.map((cat, i) => (
           <button
             key={i}
-            className="flex flex-col items-center flex-shrink-0 w-[80px] text-center focus:outline-none"
+            className="flex flex-col items-center flex-shrink-0 min-w-[100px] text-center focus:outline-none"
             onClick={() => handleClick(cat)}
           >
             <img

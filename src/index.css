@@ -2,10 +2,21 @@
 @tailwind components;
 @tailwind utilities;
 
-html, body {
+/* Prevent double scroll */
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
   overflow: hidden;
+  background-color: #E6EEF5;
 }
 
+/* Apply layout/font globally via body using Tailwind utility */
+body {
+  @apply font-profile flex justify-center items-center;
+}
+
+/* Global scrollbar styling */
 ::-webkit-scrollbar {
   width: 8px;
 }
@@ -15,6 +26,7 @@ html, body {
   border-radius: 8px;
 }
 
+/* Horizontal scroll (e.g., categories) */
 .category-scroll::-webkit-scrollbar {
   height: 6px;
 }
@@ -32,14 +44,7 @@ html, body {
   background-color: #aaa;
 }
 
-body {
-  margin: 0;
-  background-color: #E6EEF5;
-  display: flex;
-  justify-content: center;
-  @apply font-profile; /* ✅ Use Georgia/serif here */
-}
-
+/* Shared input style */
 .input-style {
   @apply w-full border-b border-gray-400 py-2 px-1 text-sm focus:outline-none focus:border-blue-500 dark:bg-gray-800 dark:text-white;
 }

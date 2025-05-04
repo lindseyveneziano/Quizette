@@ -4,6 +4,16 @@ import useQuizState from "../context/useQuizState";
 import QuestionCard from "../components/QuestionCard";
 import questions from "../data/questions";
 import { fetchTechQuizQuestions } from "../api/fetchTechQuizQuestions";
+import { db, auth } from "../context/firebase";
+import {
+  collection,
+  addDoc,
+  serverTimestamp,
+  doc,
+  getDoc,
+  updateDoc,
+  increment
+} from "firebase/firestore";
 
 const Quiz = () => {
   const { selectedLevel, selectedCategory } = useQuizState();
@@ -16,67 +26,35 @@ const Quiz = () => {
 
   useEffect(() => {
     const loadQuestions = async () => {
-      console.log("Loading questions...");
-
       if (!selectedLevel) {
-        console.log("No level selected, navigating to home.");
         navigate("/");
         return;
       }
 
-      console.log(`Selected category: ${selectedCategory}, Selected level: ${selectedLevel}`);
-
       try {
         const data = await fetchTechQuizQuestions(selectedCategory, selectedLevel);
-        console.log("Fetched data from API:", data);
-
-        const formatted = data.map((q) => {
-          const options = Object.entries(q.answers)
-            .filter(([_, val]) => val)
-            .map(([_, val]) => val);
-
-          const correctKey = Object.entries(q.correct_answers).find(
-            ([_, isCorrect]) => isCorrect === "true"
-          )?.[0]?.replace("_correct", "");
-
-          const correctAnswer = q.answers[correctKey];
-
-          return {
-            question: q.question,
-            options,
-            answer: correctAnswer,
-          };
-        });
-
-        console.log("Formatted questions from API:", formatted);
-        setQuizQuestions(formatted);
+        setQuizQuestions(data);
       } catch (err) {
-        console.warn("QuizAPI failed. Using fallback questions.");
         setUsedFallback(true);
-
         let fallback = [];
 
-        // Fallback logic for category-based questions
         if (selectedCategory) {
           fallback = questions[selectedCategory]?.[selectedLevel] || [];
-          console.log(`Using fallback questions for category: ${selectedCategory}, level: ${selectedLevel}`);
         } else {
           Object.values(questions).forEach((category) => {
-            if (category[selectedLevel]) {
-              fallback.push(...category[selectedLevel]);
-            }
+            if (category[selectedLevel]) fallback.push(...category[selectedLevel]);
           });
           fallback = fallback.sort(() => Math.random() - 0.5);
-          console.log("Using fallback questions for all categories.");
         }
 
         const formattedFallback = fallback.map((q) => ({
           question: q.question,
-          options: q.options,
-          answer: q.answer,
+          options: q.options.map((opt) => ({
+            text: opt,
+            isCorrect: opt === q.answer,
+          })),
         }));
 
-        console.log("Formatted fallback questions:", formattedFallback);
         setQuizQuestions(formattedFallback);
       } finally {
         setLoading(false);
@@ -86,14 +64,42 @@ const Quiz = () => {
     loadQuestions();
   }, [selectedLevel, selectedCategory, navigate]);
 
-  const handleAnswer = (isCorrect) => {
-    console.log(`Answer is ${isCorrect ? "correct" : "incorrect"}`);
+  const handleAnswer = async (isCorrect) => {
     if (isCorrect) setScore((prev) => prev + 1);
 
-    if (currentQuestionIndex < quizQuestions.length - 1) {
+    const isLast = currentQuestionIndex === quizQuestions.length - 1;
+
+    if (!isLast) {
       setCurrentQuestionIndex((prev) => prev + 1);
     } else {
-      console.log("Quiz finished. Navigating to results.");
+      try {
+        const user = auth.currentUser;
+
+        if (user) {
+          const userDocRef = doc(db, "users", user.uid);
+          const userSnap = await getDoc(userDocRef);
+          const userData = userSnap.exists() ? userSnap.data() : {};
+
+          await addDoc(collection(db, "quizResults"), {
+            uid: user.uid,
+            email: user.email,
+            name: userData.name || "",
+            username: userData.username || "",
+            category: selectedCategory,
+            level: selectedLevel,
+            score,
+            total: quizQuestions.length,
+            timestamp: serverTimestamp(),
+          });
+
+          await updateDoc(userDocRef, {
+            points: increment(score),
+          });
+        }
+      } catch (err) {
+        console.error("Error saving quiz result or updating points:", err.message);
+      }
+
       navigate("/results", {
         state: {
           score,
@@ -132,9 +138,7 @@ const Quiz = () => {
           questionData={quizQuestions[currentQuestionIndex]}
           questionNumber={currentQuestionIndex + 1}
           totalQuestions={quizQuestions.length}
-          onAnswer={(answerText) =>
-            handleAnswer(answerText === quizQuestions[currentQuestionIndex].answer)
-          }
+          onAnswer={handleAnswer}
         />
       </div>
     </div>

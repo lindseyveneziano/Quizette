@@ -18,6 +18,7 @@ export const registerUser = async (email, password, extraInfo = {}) => {
     where("username", "==", username)
   );
   const existing = await getDocs(usernameQuery);
+
   if (!username || !username.length) {
     throw new Error("Username is required.");
   }
@@ -34,16 +35,18 @@ export const registerUser = async (email, password, extraInfo = {}) => {
   await setDoc(doc(db, "users", user.uid), {
     uid: user.uid,
     email,
-    name: extraInfo.firstName || "",
+    name: `${extraInfo.firstName || ""} ${extraInfo.lastName || ""}`.trim(),
     username: username,
-    bio: "New here!",
-    location: "Earth",
+    bio: "",
+    location: "",
     preferredLanguage: "English",
-    profileImage: "src/assets/profile.jpg",
+    profileImage: "", // default or random image URL later if you want
+    points: 0,
   });
 
   return user;
 };
+
 
 export const logoutUser = () => {
   return signOut(auth);
