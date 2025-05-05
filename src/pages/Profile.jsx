@@ -11,7 +11,6 @@ const Profile = () => {
 
   const defaultProfile = {
     name: "",
-    username: "",
     bio: "New here!",
     email: "",
     location: "Earth",
@@ -38,7 +37,6 @@ const Profile = () => {
             ...defaultProfile,
             email: currentUser.email,
             name: currentUser.email.split("@")[0],
-            username: `@${currentUser.uid.slice(0, 6)}`,
             uid: currentUser.uid,
           };
           await setDoc(userDoc, newProfile);
@@ -55,7 +53,7 @@ const Profile = () => {
   const handleSave = async () => {
     if (!user) return;
     const userDoc = doc(db, "users", user.uid);
-    await setDoc(userDoc, editedProfile);
+    await setDoc(userDoc, { ...editedProfile, uid: user.uid }, { merge: true });
     setProfile(editedProfile);
     setIsEditing(false);
   };
@@ -103,10 +101,6 @@ const Profile = () => {
             isEditing={isEditing}
             onChange={(val) => handleChange("name", val)}
           />
-          <div>
-            <p className="text-gray-500 text-sm">Username</p>
-            <p className="text-lg font-medium">{profile.username}</p>
-          </div>
           <ProfileField
             label="Bio"
             value={profile.bio}

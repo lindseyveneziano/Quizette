@@ -9,7 +9,6 @@ const LoginRegister = () => {
   const [registerData, setRegisterData] = useState({
     firstName: "",
     lastName: "",
-    username: "",
     email: "",
     password: "",
     confirmPassword: "",
@@ -40,8 +39,6 @@ const LoginRegister = () => {
     const newErrors = {};
     if (!registerData.firstName || !registerData.lastName)
       newErrors.registerName = "Name required";
-    if (!registerData.username || registerData.username.length < 3)
-      newErrors.registerUsername = "Username must be at least 3 characters";
     if (!validateEmail(registerData.email))
       newErrors.registerEmail = "Invalid email address";
     if (!registerData.password || registerData.password.length < 6)
@@ -54,11 +51,10 @@ const LoginRegister = () => {
         await registerUser(registerData.email, registerData.password, {
           firstName: registerData.firstName,
           lastName: registerData.lastName,
-          username: registerData.username,
         });
         navigate("/home");
       } catch (err) {
-        setErrors({ registerUsername: err.message }); // show backend error (like "Username taken")
+        setErrors({ registerEmail: err.message });
       }
     } else {
       setErrors(newErrors);
@@ -145,14 +141,6 @@ const LoginRegister = () => {
                 value={registerData.lastName}
                 onChange={(e) => setRegisterData({ ...registerData, lastName: e.target.value })}
               />
-              <input
-                type="text"
-                placeholder="Username"
-                className="input-style"
-                value={registerData.username}
-                onChange={(e) => setRegisterData({ ...registerData, username: e.target.value })}
-              />
-              {errors.registerUsername && <p className="text-red-500 text-xs -mt-2">{errors.registerUsername}</p>}
               <input
                 type="email"
                 placeholder="Email Address"
