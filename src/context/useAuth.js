@@ -25,7 +25,6 @@ export const registerUser = async (email, password, extraInfo = {}) => {
     uid: user.uid,
     email,
     name: `${extraInfo.firstName || ""} ${extraInfo.lastName || ""}`.trim(),
-    username: "", // Username will be set later in profile edit
     bio: "",
     location: "",
     preferredLanguage: "English",
@@ -38,15 +37,4 @@ export const registerUser = async (email, password, extraInfo = {}) => {
 
 export const logoutUser = () => {
   return signOut(auth);
-};
-
-export const isUsernameTaken = async (username) => {
-  if (!username) return true;
-
-  const usernameQuery = query(
-    collection(db, "users"),
-    where("username", "==", username.toLowerCase())
-  );
-  const result = await getDocs(usernameQuery);
-  return !result.empty;
 };
