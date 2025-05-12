@@ -1,15 +1,19 @@
 import React from "react";
 import { Search } from "lucide-react";
 
-const SearchBar = () => {
+const SearchBar = ({ value, onChange }) => {
   return (
-    <div className="mt-2 bg-[#C7D7E3] rounded-lg flex items-center px-3 py-1 w-full">
-      <input
-        type="text"
-        placeholder="Search"
-        className="bg-transparent flex-1 outline-none text-base text-black placeholder-black"
-      />
-      <Search className="w-5 h-5 text-black" />
+    <div className="mt-2 w-full">
+      <div className="bg-[#E9F0F7] rounded-xl flex items-center px-4 py-2 shadow-sm focus-within:ring-2 focus-within:ring-blue-300 transition-all">
+        <input
+          type="text"
+          placeholder="Search categories..."
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="bg-transparent flex-1 outline-none text-[15px] text-gray-800 placeholder-gray-500"
+        />
+        <Search className="w-5 h-5 text-gray-500" />
+      </div>
     </div>
   );
 };

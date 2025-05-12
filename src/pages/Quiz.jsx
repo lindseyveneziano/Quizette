@@ -126,10 +126,10 @@ const Quiz = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#E6EEF5] flex justify-center items-center">
-      <div className="w-[390px] h-[812px] bg-white rounded-2xl shadow-lg p-6 font-serif">
+    <div className="min-h-screen bg-[#E6EEF5] flex justify-center items-center px-2 py-4">
+      <div className="w-[370px] max-h-[760px] bg-white rounded-2xl shadow-lg px-5 py-4 font-serif border-[3px] border-[#C7D7E3] overflow-hidden">
         {usedFallback && (
-          <div className="text-yellow-600 text-sm text-center mb-4 font-medium">
+          <div className="text-yellow-600 text-sm text-center mb-2 font-medium">
             ⚠ Using fallback questions due to API issue.
           </div>
         )}

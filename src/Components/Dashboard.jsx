@@ -15,6 +15,7 @@ import LevelSelectModal from "./LevelSelectModal";
 const Dashboard = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [userData, setUserData] = useState(null);
+  const [searchQuery, setSearchQuery] = useState(""); // 💡 new line
   const { setSelectedLevel, setSelectedCategory } = useQuizState();
   const navigate = useNavigate();
 
@@ -69,10 +70,13 @@ const Dashboard = () => {
             profileImage={userData?.profileImage}
             onPlayClick={() => setIsModalOpen(true)}
           />
-          <SearchBar />
+
+          <SearchBar value={searchQuery} onChange={setSearchQuery} /> {/* 🔍 */}
+
           <div className="category-scroll px-1">
-            <CategoriesSection />
+            <CategoriesSection searchQuery={searchQuery} /> {/* 🔍 */}
           </div>
+
           {userData && (
             <div className="mt-[-10px]">
               <RecentActivities />

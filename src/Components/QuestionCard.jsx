@@ -33,14 +33,14 @@ const QuestionCard = ({
   };
 
   return (
-    <div className="w-full h-full gap-5 px-5 py-3 flex flex-col items-center justify-start font-times">
+    <div className="w-full h-full gap-6 px-5 py-4 flex flex-col items-center justify-start font-times">
       {/* Header badge */}
       <div className="flex flex-col items-center gap-2">
-        <div className="w-[110px] h-[110px] bg-[#C7D7E3] rounded-full flex flex-col justify-center items-center shadow">
-          <p className="text-xs font-semibold text-gray-700">
+        <div className="w-[140px] h-[140px] bg-[#C7D7E3] rounded-full flex flex-col justify-center items-center shadow px-3 text-center">
+          <p className="text-sm font-semibold text-gray-700 leading-tight">
             Level: {selectedLevel || "Beginner"}
           </p>
-          <p className="text-sm font-bold text-black text-center">
+          <p className="text-sm font-bold text-black leading-tight">
             {selectedCategory || "Category"}
           </p>
           {icon && (
