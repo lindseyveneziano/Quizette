@@ -30,10 +30,14 @@ export const registerUser = async (email, password, extraInfo = {}) => {
     preferredLanguage: "English",
     profileImage: "",
     points: 0,
+    userSince: new Date().getFullYear(),
+    quizzesTaken: 0,
+    topCategory: "None",
   });
 
   return user;
 };
+
 
 export const logoutUser = () => {
   return signOut(auth);

@@ -12,7 +12,7 @@ import {
   doc,
   getDoc,
   updateDoc,
-  increment
+  increment,
 } from "firebase/firestore";
 
 const Quiz = () => {
@@ -64,50 +64,54 @@ const Quiz = () => {
     loadQuestions();
   }, [selectedLevel, selectedCategory, navigate]);
 
-  const handleAnswer = async (isCorrect) => {
-    if (isCorrect) setScore((prev) => prev + 1);
+const handleAnswer = async (isCorrect) => {
+  if (isCorrect) setScore((prev) => prev + 1);
 
-    const isLast = currentQuestionIndex === quizQuestions.length - 1;
+  const isLast = currentQuestionIndex === quizQuestions.length - 1;
 
-    if (!isLast) {
-      setCurrentQuestionIndex((prev) => prev + 1);
-    } else {
-      try {
-        const user = auth.currentUser;
+  if (!isLast) {
+    setCurrentQuestionIndex((prev) => prev + 1);
+  } else {
+    try {
+      const user = auth.currentUser;
 
-        if (user) {
-          const userDocRef = doc(db, "users", user.uid);
-          const userSnap = await getDoc(userDocRef);
-          const userData = userSnap.exists() ? userSnap.data() : {};
+      if (user) {
+        const userDocRef = doc(db, "users", user.uid);
+        const userSnap = await getDoc(userDocRef);
+        const userData = userSnap.exists() ? userSnap.data() : {};
 
-          await addDoc(collection(db, "quizResults"), {
-            uid: user.uid,
-            email: user.email,
-            name: userData.name || "",
-            username: userData.username || "",
-            category: selectedCategory,
-            level: selectedLevel,
-            score,
-            total: quizQuestions.length,
-            timestamp: serverTimestamp(),
-          });
-
-          await updateDoc(userDocRef, {
-            points: increment(score),
-          });
-        }
-      } catch (err) {
-        console.error("Error saving quiz result or updating points:", err.message);
-      }
-
-      navigate("/results", {
-        state: {
+        // Save quiz result
+        await addDoc(collection(db, "quizResults"), {
+          uid: user.uid,
+          email: user.email,
+          name: userData.name || "",
+          username: userData.username || "",
+          category: selectedCategory,
+          level: selectedLevel,
           score,
           total: quizQuestions.length,
-        },
-      });
+          timestamp: serverTimestamp(),
+        });
+
+        // Update points, quizzesTaken, and topCategory
+        await updateDoc(userDocRef, {
+          points: increment(score),
+          quizzesTaken: increment(1),
+          topCategory: selectedCategory || "None", // ✅ Set to last completed category
+        });
+      }
+    } catch (err) {
+      console.error("Error saving quiz result or updating stats:", err.message);
     }
-  };
+
+    navigate("/results", {
+      state: {
+        score,
+        total: quizQuestions.length,
+      },
+    });
+  }
+};
 
   if (loading) {
     return (
