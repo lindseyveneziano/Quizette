@@ -74,7 +74,7 @@ const Profile = () => {
 
   return (
     <MainLayout>
-      <div className="w-[390px] min-h-[812px] bg-white rounded-2xl shadow-lg p-6 font-serif flex flex-col items-center space-y-5 pb-20 overflow-y-auto">
+      <div className="w-full max-w-md min-h-screen bg-white rounded-2xl shadow-lg p-6 font-serif flex flex-col items-center space-y-5 pb-32 overflow-y-auto mx-auto">
         <h1 className="text-2xl font-bold text-[#1D4C79] text-center">👤 Profile</h1>
 
         <img
