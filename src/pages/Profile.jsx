@@ -3,6 +3,7 @@ import MainLayout from "../Components/MainLayout";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth, db } from "../context/firebase";
 import { doc, getDoc, setDoc } from "firebase/firestore";
+import DefaultProfile from "../assets/profile.jpg";
 
 const Profile = () => {
   const [isEditing, setIsEditing] = useState(false);
@@ -15,7 +16,7 @@ const Profile = () => {
     email: "",
     location: "Earth",
     preferredLanguage: "English",
-    profileImage: "/assets/default_profile.png", // ✅ Updated default image path
+    profileImage: "",
     userSince: new Date().getFullYear(),
     quizzesTaken: 0,
     topCategory: "None",
@@ -41,14 +42,10 @@ const Profile = () => {
             email: currentUser.email,
             name: currentUser.email.split("@")[0],
             uid: currentUser.uid,
-            userSince: new Date().getFullYear(),
-            quizzesTaken: 0,
-            topCategory: "None",
           };
           await setDoc(userDoc, newProfile);
           setProfile(newProfile);
           setEditedProfile(newProfile);
-          console.log('New Profile Created:', newProfile);
         }
         setLoading(false);
       }
@@ -60,13 +57,7 @@ const Profile = () => {
   const handleSave = async () => {
     if (!user) return;
     const userDoc = doc(db, "users", user.uid);
-    await setDoc(userDoc, {
-      ...editedProfile,
-      uid: user.uid,
-      userSince: profile.userSince || new Date().getFullYear(),
-      quizzesTaken: profile.quizzesTaken || 0,
-      topCategory: profile.topCategory || "None",
-    }, { merge: true });
+    await setDoc(userDoc, { ...editedProfile, uid: user.uid }, { merge: true });
     setProfile(editedProfile);
     setIsEditing(false);
   };
@@ -77,23 +68,29 @@ const Profile = () => {
   };
 
   const handleChange = (field, value) => {
-    setEditedProfile((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
+    setEditedProfile((prev) => ({ ...prev, [field]: value }));
   };
 
-  if (loading) return <MainLayout><p className="text-center">Loading...</p></MainLayout>;
+  if (loading)
+    return (
+      <MainLayout>
+        <p className="text-center">Loading...</p>
+      </MainLayout>
+    );
 
   return (
     <MainLayout>
-      <div className="w-full max-w-md min-h-screen bg-white rounded-2xl shadow-lg p-6 font-serif flex flex-col items-center space-y-5 pb-32 overflow-y-auto mx-auto">
+      <div className="w-[390px] bg-white rounded-2xl shadow-lg p-6 font-serif flex flex-col items-center space-y-5 pb-32 mx-auto">
         <h1 className="text-2xl font-bold text-[#1D4C79] text-center">👤 Profile</h1>
 
         <img
-          src={profile.profileImage || "/assets/default_profile.png"} // ✅ Fallback to default image
-          alt="Profile"
+          src={profile.profileImage && profile.profileImage.trim() !== "" ? profile.profileImage : DefaultProfile}
+          alt="Profile Picture"
           className="w-28 h-28 rounded-full object-cover border-4 border-[#E6EEF5]"
+          onError={(e) => {
+            e.target.onerror = null;
+            e.target.src = DefaultProfile;
+          }}
         />
 
         {isEditing && (
@@ -107,41 +104,11 @@ const Profile = () => {
         )}
 
         <div className="w-full space-y-4 text-center">
-          <ProfileField
-            label="Name"
-            value={profile.name}
-            editValue={editedProfile.name}
-            isEditing={isEditing}
-            onChange={(val) => handleChange("name", val)}
-          />
-          <ProfileField
-            label="Bio"
-            value={profile.bio}
-            editValue={editedProfile.bio}
-            isEditing={isEditing}
-            onChange={(val) => handleChange("bio", val)}
-          />
-          <ProfileField
-            label="Email"
-            value={profile.email}
-            editValue={editedProfile.email}
-            isEditing={isEditing}
-            onChange={(val) => handleChange("email", val)}
-          />
-          <ProfileField
-            label="Location"
-            value={profile.location}
-            editValue={editedProfile.location}
-            isEditing={isEditing}
-            onChange={(val) => handleChange("location", val)}
-          />
-          <ProfileField
-            label="Preferred Language"
-            value={profile.preferredLanguage}
-            editValue={editedProfile.preferredLanguage}
-            isEditing={isEditing}
-            onChange={(val) => handleChange("preferredLanguage", val)}
-          />
+          <ProfileField label="Name" value={profile.name} editValue={editedProfile.name} isEditing={isEditing} onChange={(val) => handleChange("name", val)} />
+          <ProfileField label="Bio" value={profile.bio} editValue={editedProfile.bio} isEditing={isEditing} onChange={(val) => handleChange("bio", val)} />
+          <ProfileField label="Email" value={profile.email} editValue={editedProfile.email} isEditing={isEditing} onChange={(val) => handleChange("email", val)} />
+          <ProfileField label="Location" value={profile.location} editValue={editedProfile.location} isEditing={isEditing} onChange={(val) => handleChange("location", val)} />
+          <ProfileField label="Preferred Language" value={profile.preferredLanguage} editValue={editedProfile.preferredLanguage} isEditing={isEditing} onChange={(val) => handleChange("preferredLanguage", val)} />
         </div>
 
         {isEditing ? (

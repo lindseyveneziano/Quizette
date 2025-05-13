@@ -7,42 +7,34 @@ const Settings = () => {
   const [wifiOnly, setWifiOnly] = useState(true);
 
   const handleClearCache = () => {
-    // Just simulating for now
     alert("Cache cleared successfully!");
   };
 
   return (
     <MainLayout>
-      <div className="w-[390px] h-[812px] bg-white rounded-2xl shadow-lg p-6 space-y-6 font-serif">
-        <h1 className="text-2xl font-bold text-[#1D4C79] text-center">
-          ⚙️ Settings
-        </h1>
+      <div className="w-[390px] bg-white rounded-2xl shadow-lg p-6 space-y-6 font-serif mx-auto">
+        <h1 className="text-2xl font-bold text-[#1D4C79] text-center">⚙️ Settings</h1>
 
-        {/* Notifications */}
         <SettingToggle
           label="🔔 Notifications"
           enabled={notificationsEnabled}
           setEnabled={setNotificationsEnabled}
         />
 
-        {/* Dark Mode */}
         <SettingToggle
           label="🌙 Dark Mode"
           enabled={darkMode}
           setEnabled={setDarkMode}
         />
 
-        {/* Data Usage */}
         <SettingToggle
           label="📶 Use Wi-Fi Only"
           enabled={wifiOnly}
           setEnabled={setWifiOnly}
         />
 
-        {/* Privacy Settings */}
         <SettingLink label="🔒 Privacy Settings" href="#" />
 
-        {/* Clear Cache */}
         <div className="flex justify-between items-center border-b pb-4">
           <span className="text-lg">🗑️ Clear Cache</span>
           <button
@@ -53,13 +45,9 @@ const Settings = () => {
           </button>
         </div>
 
-        {/* Contact Support */}
         <SettingLink label="📩 Contact Support" href="#" />
-
-        {/* Terms and Policies */}
         <SettingLink label="📜 Terms & Policies" href="#" />
 
-        {/* About + App Info */}
         <div className="text-center pt-10 text-sm text-gray-600 space-y-1">
           <p>📱 Quizette App</p>
           <p>Version 1.0.0</p>
@@ -70,7 +58,7 @@ const Settings = () => {
   );
 };
 
-// Reusable Toggle Setting
+// Toggle Setting Component
 const SettingToggle = ({ label, enabled, setEnabled }) => (
   <div className="flex justify-between items-center border-b pb-4">
     <span className="text-lg">{label}</span>
@@ -82,14 +70,12 @@ const SettingToggle = ({ label, enabled, setEnabled }) => (
         onChange={() => setEnabled(!enabled)}
       />
       <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:bg-blue-500 transition-all"></div>
-      <span className="ml-2 text-sm text-gray-600">
-        {enabled ? "On" : "Off"}
-      </span>
+      <span className="ml-2 text-sm text-gray-600">{enabled ? "On" : "Off"}</span>
     </label>
   </div>
 );
 
-// Reusable Link Setting
+// Link Setting Component
 const SettingLink = ({ label, href }) => (
   <a
     href={href}
