@@ -15,7 +15,10 @@ const Profile = () => {
     email: "",
     location: "Earth",
     preferredLanguage: "English",
-    profileImage: "src/assets/profile.jpg",
+    profileImage: "/assets/default_profile.png", // ✅ Updated default image path
+    userSince: new Date().getFullYear(),
+    quizzesTaken: 0,
+    topCategory: "None",
   };
 
   const [profile, setProfile] = useState(defaultProfile);
@@ -38,10 +41,14 @@ const Profile = () => {
             email: currentUser.email,
             name: currentUser.email.split("@")[0],
             uid: currentUser.uid,
+            userSince: new Date().getFullYear(),
+            quizzesTaken: 0,
+            topCategory: "None",
           };
           await setDoc(userDoc, newProfile);
           setProfile(newProfile);
           setEditedProfile(newProfile);
+          console.log('New Profile Created:', newProfile);
         }
         setLoading(false);
       }
@@ -53,7 +60,13 @@ const Profile = () => {
   const handleSave = async () => {
     if (!user) return;
     const userDoc = doc(db, "users", user.uid);
-    await setDoc(userDoc, { ...editedProfile, uid: user.uid }, { merge: true });
+    await setDoc(userDoc, {
+      ...editedProfile,
+      uid: user.uid,
+      userSince: profile.userSince || new Date().getFullYear(),
+      quizzesTaken: profile.quizzesTaken || 0,
+      topCategory: profile.topCategory || "None",
+    }, { merge: true });
     setProfile(editedProfile);
     setIsEditing(false);
   };
@@ -78,7 +91,7 @@ const Profile = () => {
         <h1 className="text-2xl font-bold text-[#1D4C79] text-center">👤 Profile</h1>
 
         <img
-          src={profile.profileImage}
+          src={profile.profileImage || "/assets/default_profile.png"} // ✅ Fallback to default image
           alt="Profile"
           className="w-28 h-28 rounded-full object-cover border-4 border-[#E6EEF5]"
         />
@@ -156,9 +169,9 @@ const Profile = () => {
         )}
 
         <div className="pt-10 text-sm text-gray-500 text-center">
-          <p>📅 User since 2024</p>
-          <p>🧠 120 quizzes taken</p>
-          <p>🏆 Top Category: Algorithms</p>
+          <p>📅 User since {profile.userSince}</p>
+          <p>🧠 {profile.quizzesTaken} quizzes taken</p>
+          <p>🏆 Top Category: {profile.topCategory}</p>
         </div>
       </div>
     </MainLayout>
